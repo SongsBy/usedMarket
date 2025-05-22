@@ -1,11 +1,13 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/item_box.dart';
 import 'trend_foryou.dart';
+import 'package:usedmarket/screens/search.dart';
+import 'package:usedmarket/data/all_item.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final List<String> selectedInterests;
+  const HomeScreen({Key? key, required this.selectedInterests}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -13,6 +15,50 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String selectedTab = 'FOR YOU';
+  int _selectedIndex = 0;
+
+  List<Map<String, dynamic>> getFilteredItems() {
+    return allItems.where((item) => widget.selectedInterests.contains(item['category'])).toList();
+  }
+
+  void _showSearchDialog() {
+    showGeneralDialog(
+      context: context,
+      barrierLabel: "검색",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.3),
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {
+        return const SizedBox.shrink();
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return SlideTransition(
+          position: Tween(
+            begin: const Offset(0, -1),
+            end: Offset.zero,
+          ).animate(anim1),
+          child: const SearchOverlay(),
+        );
+      },
+    );
+  }
+
+  Widget buildForYouList(BuildContext context, List<String> selectedInterests) {
+    final filteredItems = allItems.where((item) => selectedInterests.contains(item['category'])).toList();
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      children: filteredItems.map((item) {
+        return ItemBox(
+          item['image'],
+          item['price'],
+          item['title'],
+          onTap: () => navigateToDetail(context, item['image'], item['price'], item['title']),
+        );
+      }).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        surfaceTintColor: Colors.white,
+        shadowColor: Colors.transparent,
         elevation: 0,
         titleSpacing: 0,
         leading: IconButton(
@@ -46,11 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.search, size: 20, color: Colors.black),
-            onPressed: () => debugPrint('Search pressed'),
+            onPressed: _showSearchDialog,
           ),
           IconButton(
             icon: const Icon(Icons.notifications_none, size: 20, color: Colors.black),
-            onPressed: () => debugPrint('Notification pressed'),
+            onPressed: () {},
           ),
         ],
       ),
@@ -109,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: selectedTab == 'TREND' ? buildTrendList(context) : buildForYouList(context),
+              child: selectedTab == 'TREND' ? buildTrendList(context) :
+              buildForYouList(context , widget.selectedInterests),
             ),
           ),
         ],
@@ -128,19 +178,65 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이'),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+              },
+              icon: SvgPicture.asset(
+                'assets/image/home.svg',
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                  _selectedIndex == 0 ? Colors.black : Colors.grey,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 1;
+                });
+                Navigator.pushNamed(
+                  context,
+                  '/favorite',
+                  arguments: widget.selectedInterests,
+                );
+              },
+              icon: SvgPicture.asset(
+                'assets/image/menuheart.svg',
+                width: 24,
+                height: 24,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 2;
+                });
+                Navigator.pushNamed(
+                  context,
+                  '/mypage',
+                  arguments: widget.selectedInterests,
+                );
+              },
+              icon: SvgPicture.asset(
+                'assets/image/user.svg',
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                  _selectedIndex == 2 ? Colors.black : Colors.grey,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
           ],
-
         ),
       ),
     );

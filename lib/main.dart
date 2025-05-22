@@ -1,5 +1,9 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:usedmarket/screens/Login.dart';
+import 'package:usedmarket/screens/Signup.dart'; // 이거 추가!
+import 'package:usedmarket/screens/favorite_page.dart';
+import 'package:usedmarket/screens/interest_select_page.dart';
+import 'package:usedmarket/screens/mypage.dart';
 import 'screens/home_screen.dart';
 
 void main() {
@@ -13,8 +17,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '중고마켓',
-      home: const HomeScreen(),
       debugShowCheckedModeBanner: false,
+      home: const Login(),
+      routes: {
+        '/insert':(context) => const InterestSelectionPage(),
+        '/go': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as List<String>? ?? [];
+          return HomeScreen(selectedInterests: args);
+        },
+        '/favorite': (context) {
+          final selected = ModalRoute.of(context)!.settings.arguments as List<String>? ?? [];
+          return FavoritePage(selectedInterests: selected);
+        },
+        '/mypage': (context){
+          final selected = ModalRoute.of(context)!.settings.arguments as List<String>? ?? [];
+          return MyPageScreen(selectedInterests: selected);
+        },
+        '/signup': (context) => const Signup(),
+      },
     );
   }
 }
