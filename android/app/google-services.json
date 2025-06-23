@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "117867501693",
+    "project_id": "usedmarket-960f3",
+    "storage_bucket": "usedmarket-960f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117867501693:android:5c5ce775c00355f8733914",
+        "android_client_info": {
+          "package_name": "com.example.usedmarket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxlsJH_bsI4JLC_LxeMsey8KA-TpukKFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
