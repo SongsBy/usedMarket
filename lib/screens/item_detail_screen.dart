@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../screens/chat_screen.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String imagePath;
@@ -131,8 +132,25 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
               ),
-              onPressed: () {},
-              child: const Text('구매하기', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                final productId = widget.title.replaceAll(' ', '_'); // 공백 제거한 상품 ID 대체
+                const currentUserId = 'test_user'; // 이건 실제 로그인 정보로 대체할 것
+                final chatRoomId = '${productId}_$currentUserId';
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChatScreen(
+                      chatRoomId: chatRoomId,
+                      currentUserId: currentUserId,
+                      itemTitle: widget.title,
+                      itemPrice: widget.price,
+                      itemImage: widget.imagePath,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('채팅하기', style: TextStyle(color: Colors.white)),
             )
           ],
         ),
